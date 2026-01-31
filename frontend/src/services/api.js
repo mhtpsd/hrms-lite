@@ -9,20 +9,40 @@ export const api = axios.create({
   },
 });
 
-// Employee APIs
+// Employee APIs - Export individual functions
+export const getEmployees = () => api.get('/api/employees/');
+export const createEmployee = (data) => api.post('/api/employees/', data);
+export const deleteEmployee = (id) => api.delete(`/api/employees/${id}`);
+
+// Attendance APIs - Export individual functions
+export const getAttendance = (employeeId) => {
+  if (employeeId) {
+    return api.get(`/api/attendance/employee/${employeeId}`);
+  }
+  return api.get('/api/attendance/');
+};
+
+export const markAttendance = (data) => api.post('/api/attendance/', data);
+
+export const getAttendanceByDate = (date) => 
+  api.get('/api/attendance/', { params: { filter_date: date } });
+
+// Dashboard API - Export individual function
+export const getDashboardStats = () => api.get('/api/dashboard/stats');
+
+// Export everything as named exports (backward compatibility)
 export const employeeAPI = {
-  getAll: () => api.get('/api/employees/'),
-  create: (data) => api.post('/api/employees/', data),
-  delete: (id) => api.delete(`/api/employees/${id}`),
+  getAll: getEmployees,
+  create: createEmployee,
+  delete: deleteEmployee,
 };
 
-// Attendance APIs
 export const attendanceAPI = {
-  getAll: (date) => api.get('/api/attendance/', { params: { filter_date: date } }),
-  create: (data) => api.post('/api/attendance/', data),
+  getAll: getAttendance,
+  create: markAttendance,
+  getByDate: getAttendanceByDate,
 };
 
-// Dashboard API
 export const dashboardAPI = {
-  getStats: () => api.get('/api/dashboard/stats'),
+  getStats: getDashboardStats,
 };
