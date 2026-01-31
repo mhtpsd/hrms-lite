@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.database import engine, Base
-from app.routers import employees, attendance
-from app import crud
-from app.database import SessionLocal
+from database import engine, Base, SessionLocal
+from routers import employees, attendance
+import crud
+import os
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -11,7 +11,9 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title="HRMS Lite API",
     description="Lightweight Human Resource Management System",
-    version="1.0.0"
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc"
 )
 
 # CORS Configuration
@@ -44,6 +46,7 @@ def get_dashboard_stats():
     """Get dashboard statistics"""
     db = SessionLocal()
     try:
-        return crud.get_dashboard_stats(db)
+        stats = crud.get_dashboard_stats(db)
+        return stats
     finally:
         db.close()
