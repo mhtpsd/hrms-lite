@@ -1,19 +1,28 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000'; // Adjust if backend runs elsewhere
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
-const api = axios.create({
-    baseURL: API_URL,
-    headers: {
-        'Content-Type': 'application/json',
-    },
+export const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-export const getEmployees = () => api.get('/employees/');
-export const createEmployee = (data) => api.post('/employees/', data);
-export const deleteEmployee = (id) => api.delete(`/employees/${id}`);
+// Employee APIs
+export const employeeAPI = {
+  getAll: () => api.get('/api/employees/'),
+  create: (data) => api.post('/api/employees/', data),
+  delete: (id) => api.delete(`/api/employees/${id}`),
+};
 
-export const markAttendance = (data) => api.post('/attendance/', data);
-export const getAttendance = (employeeId) => api.get(`/attendance/${employeeId}`);
+// Attendance APIs
+export const attendanceAPI = {
+  getAll: (date) => api.get('/api/attendance/', { params: { filter_date: date } }),
+  create: (data) => api.post('/api/attendance/', data),
+};
 
-export default api;
+// Dashboard API
+export const dashboardAPI = {
+  getStats: () => api.get('/api/dashboard/stats'),
+};
