@@ -31,7 +31,24 @@ def get_employee(db: Session, employee_id: str):
     employee = db.query(models.Employee).filter(models.Employee.employee_id == employee_id).first()
     if not employee:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Employee not found")
-    return employee
+    
+    # Add total present days
+    total_present = db.query(models.Attendance).filter(
+        models.Attendance.employee_id == employee_id,
+        models.Attendance.status == models.AttendanceStatus.PRESENT
+    ).count()
+    
+    employee_dict = {
+        "id": employee.id,
+        "employee_id": employee.employee_id,
+        "full_name": employee.full_name,
+        "email": employee.email,
+        "department": employee.department,
+        "created_at": employee.created_at,
+        "total_present_days": total_present
+    }
+    
+    return employee_dict
 
 def create_employee(db: Session, employee: schemas.EmployeeCreate):
     # Check for duplicate employee_id
@@ -48,10 +65,23 @@ def create_employee(db: Session, employee: schemas.EmployeeCreate):
     db.add(db_employee)
     db.commit()
     db.refresh(db_employee)
-    return db_employee
+    
+    # Return with total_present_days
+    return {
+        "id": db_employee.id,
+        "employee_id": db_employee.employee_id,
+        "full_name": db_employee.full_name,
+        "email": db_employee.email,
+        "department": db_employee.department,
+        "created_at": db_employee.created_at,
+        "total_present_days": 0
+    }
 
 def delete_employee(db: Session, employee_id: str):
-    employee = get_employee(db, employee_id)
+    employee = db.query(models.Employee).filter(models.Employee.employee_id == employee_id).first()
+    if not employee:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Employee not found")
+    
     db.delete(employee)
     db.commit()
     return {"message": "Employee deleted successfully"}
@@ -79,7 +109,16 @@ def create_attendance(db: Session, attendance: schemas.AttendanceCreate):
     db.add(db_attendance)
     db.commit()
     db.refresh(db_attendance)
-    return db_attendance
+    
+    # Return with employee name
+    return {
+        "id": db_attendance.id,
+        "employee_id": db_attendance.employee_id,
+        "date": db_attendance.date,
+        "status": db_attendance.status,
+        "created_at": db_attendance.created_at,
+        "employee_name": employee.full_name
+    }
 
 def get_all_attendance(db: Session, filter_date: date = None):
     query = db.query(models.Attendance)
