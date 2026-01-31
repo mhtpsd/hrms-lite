@@ -7,10 +7,14 @@ __pycache__/
 venv/
 env/
 ENV/
+*.egg-info/
+dist/
+build/
 
 # Database
 *.db
 *.sqlite3
+hrms.db
 
 # Environment
 .env
@@ -21,3 +25,7 @@ ENV/
 .idea/
 *.swp
 *.swo
+
+# OS
+.DS_Store
+Thumbs.db

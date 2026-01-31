@@ -8,16 +8,20 @@ router = APIRouter(prefix="/api/employees", tags=["employees"])
 
 @router.post("/", response_model=schemas.EmployeeResponse, status_code=201)
 def create_employee(employee: schemas.EmployeeCreate, db: Session = Depends(get_db)):
+    """Create a new employee"""
     return crud.create_employee(db, employee)
 
 @router.get("/", response_model=List[schemas.EmployeeResponse])
 def get_employees(db: Session = Depends(get_db)):
+    """Get all employees with total present days"""
     return crud.get_employees(db)
 
 @router.get("/{employee_id}", response_model=schemas.EmployeeResponse)
 def get_employee(employee_id: str, db: Session = Depends(get_db)):
+    """Get a single employee by employee_id"""
     return crud.get_employee(db, employee_id)
 
 @router.delete("/{employee_id}")
 def delete_employee(employee_id: str, db: Session = Depends(get_db)):
+    """Delete an employee"""
     return crud.delete_employee(db, employee_id)
